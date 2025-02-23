@@ -3,159 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Match Concepts - Protestant Reformation</title>
+    <title>Discover Humanism</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background: url('https://i.imgur.com/MfQDbrT.jpeg') no-repeat center center fixed;
+            background: url('https://i.imgur.com/I7VteY4.png') no-repeat center center fixed;
             background-size: cover;
             padding: 20px;
         }
         .container {
-            width: 70%;
+            width: 80%;
             margin: auto;
             background: rgba(255, 255, 255, 0.9);
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
-        .terms, .definitions {
-            display: inline-block;
-            width: 45%;
-            text-align: left;
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
         }
-        .term, .definition {
-            padding: 10px;
-            margin: 10px;
+        .card {
             background: #e0e0e0;
-            border-radius: 5px;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
             cursor: pointer;
-            user-select: none;
+            transition: transform 0.3s;
         }
-        .selected {
-            background-color: #0288d1;
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .hidden {
+            display: none;
+        }
+        .correct {
+            background: #33cc33 !important;
             color: white;
         }
-        .matched {
+        .incorrect {
+            background: #cc3333 !important;
             color: white;
-            font-weight: bold;
-        }
-        button {
-            margin-top: 20px;
-            padding: 14px 28px;
-            font-size: 20px;
-            background-color: #0288d1;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        button:hover {
-            background-color: #01579b;
-        }
-        #result {
-            margin-top: 20px;
-            font-size: 22px;
-            font-weight: bold;
-            color: #333;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Match Concepts - Protestant Reformation</h1>
-        <div class="terms" id="terms"></div>
-        <div class="definitions" id="definitions"></div>
-        <button onclick="checkAnswers()">Check Answers</button>
+        <h1>Discover Humanism</h1>
+        <p>Click on each card to reveal its content and select the correct category.</p>
+        <div class="grid" id="gameBoard"></div>
         <p id="result"></p>
     </div>
     <script>
-        const pairs = [
-            { term: "Martin Luther", definition: "Rejected the sale of indulgences and wrote 95 theses in 1517." },
-            { term: "Calvinism", definition: "Doctrine based on predestination, promoted by John Calvin." },
-            { term: "Anglicanism", definition: "Emerged in England when Henry VIII broke with the Pope in 1534." },
-            { term: "Council of Trent", definition: "Meeting between 1545 and 1563 that defined Catholic doctrine against Protestantism." },
-            { term: "Society of Jesus", definition: "Religious order founded by Ignatius of Loyola in 1540 to strengthen the Catholic faith." },
-            { term: "Nepotism", definition: "Practice of granting ecclesiastical positions to relatives." },
-            { term: "Simony", definition: "Sale of ecclesiastical positions and indulgences." },
-            { term: "Justification by faith", definition: "Lutheran principle that salvation is obtained only through faith." },
-            { term: "Predestination", definition: "Belief that a person's destiny is determined by God." },
-            { term: "Protestant Reformation", definition: "Movement initiated in the 16th century that challenged the authority of the Catholic Church." }
+        const cards = [
+            { img: "https://i.imgur.com/6LOSsbt.jpeg", text: "The human being as the center of thought", category: "Characteristics" },
+            { img: "https://i.imgur.com/keIXx3i.jpeg", text: "Study of Greco-Roman classical texts", category: "Characteristics" },
+            { img: "https://i.imgur.com/r1Wy1JQ.jpeg", text: "Defense of individualism and reason", category: "Characteristics" },
+            { img: "https://i.imgur.com/4nZ1dZF.jpeg", text: "Machiavelli and his work 'The Prince'", category: "Literary and Philosophical" },
+            { img: "https://i.imgur.com/FGSsjyH.jpeg", text: "Erasmus of Rotterdam and Christian humanism", category: "Religious" },
+            { img: "https://i.imgur.com/ooXspTz.jpeg", text: "Copernicus and the heliocentric theory", category: "Scientific" },
+            { img: "https://i.imgur.com/kjcEJON.jpeg", text: "Paracelsus and advances in medicine", category: "Scientific" },
+            { img: "https://i.imgur.com/89eyjkk.jpeg", text: "Gutenberg's printing press and the spread of knowledge", category: "Expansion" },
+            { img: "https://i.imgur.com/qvP1XDA.jpeg", text: "Foundation of academies and study centers", category: "Expansion" }
         ];
 
-        let selectedTerm = null;
-        let selectedDefinition = null;
-        let matches = {};
-        let matchIndex = 0;
-        const colors = ["#ff5733", "#33ff57", "#3357ff", "#ff33a8", "#ffa533", "#57ff33", "#33a8ff", "#a833ff", "#ff3333", "#33ffa5"];
-
-        function renderItems() {
-            const termsContainer = document.getElementById("terms");
-            const definitionsContainer = document.getElementById("definitions");
-            termsContainer.innerHTML = "";
-            definitionsContainer.innerHTML = "";
-
-            const shuffledTerms = [...pairs].sort(() => Math.random() - 0.5);
-            const shuffledDefinitions = [...pairs].sort(() => Math.random() - 0.5);
-
-            shuffledTerms.forEach(pair => {
-                let termDiv = document.createElement("div");
-                termDiv.classList.add("term");
-                termDiv.textContent = pair.term;
-                termDiv.onclick = () => selectItem(termDiv, "term");
-                termsContainer.appendChild(termDiv);
-            });
-
-            shuffledDefinitions.forEach(pair => {
-                let defDiv = document.createElement("div");
-                defDiv.classList.add("definition");
-                defDiv.textContent = pair.definition;
-                defDiv.onclick = () => selectItem(defDiv, "definition");
-                definitionsContainer.appendChild(defDiv);
+        function loadGame() {
+            const gameBoard = document.getElementById("gameBoard");
+            gameBoard.innerHTML = "";
+            
+            cards.forEach((card, index) => {
+                let cardDiv = document.createElement("div");
+                cardDiv.classList.add("card");
+                cardDiv.innerHTML = `<img src="${card.img}" width="100%"><p class="hidden">${card.text}</p>
+                                     <select class="hidden">
+                                        <option value="">Select a category</option>
+                                        <option value="Characteristics">Characteristics</option>
+                                        <option value="Literary and Philosophical">Literary and Philosophical</option>
+                                        <option value="Religious">Religious</option>
+                                        <option value="Scientific">Scientific</option>
+                                        <option value="Expansion">Expansion</option>
+                                     </select>`;
+                cardDiv.onclick = function() { revealCard(cardDiv, index); };
+                gameBoard.appendChild(cardDiv);
             });
         }
 
-        function selectItem(element, type) {
-            if (type === "term") {
-                if (selectedTerm) selectedTerm.classList.remove("selected");
-                selectedTerm = element;
+        function revealCard(cardDiv, index) {
+            let text = cardDiv.querySelector("p");
+            let select = cardDiv.querySelector("select");
+            text.classList.remove("hidden");
+            select.classList.remove("hidden");
+            select.onchange = function() { checkAnswer(select, index, cardDiv); };
+        }
+
+        function checkAnswer(select, index, cardDiv) {
+            if (select.value === cards[index].category) {
+                cardDiv.classList.add("correct");
             } else {
-                if (selectedDefinition) selectedDefinition.classList.remove("selected");
-                selectedDefinition = element;
+                cardDiv.classList.add("incorrect");
             }
-            element.classList.add("selected");
-
-            if (selectedTerm && selectedDefinition) {
-                matches[selectedTerm.textContent] = selectedDefinition.textContent;
-                let color = colors[matchIndex % colors.length];
-                selectedTerm.style.backgroundColor = color;
-                selectedDefinition.style.backgroundColor = color;
-                selectedTerm.classList.add("matched");
-                selectedDefinition.classList.add("matched");
-                selectedTerm.onclick = null;
-                selectedDefinition.onclick = null;
-                selectedTerm = null;
-                selectedDefinition = null;
-                matchIndex++;
-            }
+            select.disabled = true;
         }
 
-        function checkAnswers() {
-            let correct = 0;
-            let incorrect = 0;
-            pairs.forEach(pair => {
-                if (matches[pair.term] === pair.definition) {
-                    correct++;
-                } else {
-                    incorrect++;
-                }
-            });
-            document.getElementById("result").textContent = `Correct: ${correct}, Incorrect: ${incorrect}`;
-        }
-
-        renderItems();
+        loadGame();
     </script>
 </body>
 </html>
